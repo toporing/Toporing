@@ -23,7 +23,6 @@
 
 #include <ring.hpp>
 #include <ltj_iterator.hpp>
-#include <ltj_iterator_unidirectional.hpp>
 #include <triple_pattern.hpp>
 #include <unordered_map>
 #include <vector>
