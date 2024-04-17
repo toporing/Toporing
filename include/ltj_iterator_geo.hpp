@@ -222,6 +222,23 @@ namespace ring {
         }
 
 
+	size_type interval_length() const { 
+	  //si es contencion, ver si es S u O
+	  //si es s, retornar largo del intervalo [first(x)..x]
+	  //si es o, retornar la altura del nodo
+	  //
+	  //touches -> retornar # axiomas?
+	  if (is_contains() && is_s_binded() ){
+	    return m_ptr_georing->num_children(binding_s);
+	  }else if(is_contains() && is_o_binded()){
+	    return  m_ptr_georing->height(binding_o);
+	  }else if(is_touches() && is_s_binded() ){
+	      return m_ptr_georing->estimate_touches(binding_s);
+	  }else if (is_touches() && is_o_binded() ){
+	      return m_ptr_georing->estimate_touches(binding_o);
+	  }
+	  return m_ptr_georing->num_vertices();
+	}
 
 	bool is_contains(){
 		return !m_ptr_triple_pattern.term_p.is_variable && m_ptr_triple_pattern.term_p.value == TOPO_CONTAINS;

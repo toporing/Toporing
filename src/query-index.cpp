@@ -179,8 +179,13 @@ void queryGeo(const std::string &file, const std::string &queries, const uint64_
     sdsl::int_vector<> inv_perm(perm.size());
     for(int i=0; i<perm.size(); i++) inv_perm[perm[i]] = i;
 
+    cerr << "Total toporing size: "<< size_in_mega_bytes(ring) + size_in_mega_bytes(graph) + size_in_mega_bytes(perm) + size_in_mega_bytes(inv_perm) <<"MB" << endl;
     //cout << endl << " Index loaded " << sdsl::size_in_bytes(graph) << " bytes" << endl;
 
+    cerr << "ring;toporing"<<endl;
+    cerr << size_in_mega_bytes(ring) << ";"<< size_in_mega_bytes(graph) <<endl;
+    ofstream ff("report.html");
+    sdsl::write_structure<HTML_FORMAT>(graph, ff);
     std::ifstream ifs;
     uint64_t nQ = 0;
 
@@ -215,21 +220,24 @@ void queryGeo(const std::string &file, const std::string &queries, const uint64_
 
             start = ::util::time::usage::now();
             algorithm_type ltj(&query, &ring, &graph);
+
+            std::unordered_map<uint8_t, std::string> ht;
+            for(const auto &p : hash_table_vars){
+                ht.insert({p.second, p.first});
+            }
+            //ltj.print_veo(ht);
+
+
             ltj.join(res, limit, 600);
             stop = ::util::time::usage::now();
 
             total_elapsed_time = (uint64_t) duration_cast<nanoseconds>(stop.elapsed - start.elapsed);
             total_user_time = (uint64_t) duration_cast<nanoseconds>(stop.user - start.user);
 
-            std::unordered_map<uint8_t, std::string> ht;
-            for(const auto &p : hash_table_vars){
-                ht.insert({p.second, p.first});
-            }
 
             //cout << "Query Details:" << endl;
 	    //cout << query_string << endl;
             //ltj.print_query(ht, inv_perm);
-            //ltj.print_veo(ht);
             //cout << "##########" << endl;
             //ltj.print_results(res, ht, inv_perm);
             cout << nQ <<  ";" << res.size() << ";" << total_elapsed_time << ";" << total_user_time << endl;

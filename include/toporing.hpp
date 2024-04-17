@@ -595,6 +595,19 @@ namespace ring{
 	return 2+pos_open-m_T_bp.rank(pos_open);
       }
 
+      size_type num_children(value_type x){
+	if(x>num_vertices()) return 0;
+	return x - first(x)+1;
+      }
+
+      size_type height(value_type x){
+	if(x>num_vertices()) return 0;
+	size_type pos_open = post_to_pre(x);
+	return m_T_bp.excess(pos_open)+1;
+      }
+
+
+
       // returns the position of the opening parentheses for node with
       // postorder x
       size_type post_to_pre(value_type x){
@@ -738,6 +751,17 @@ namespace ring{
 	return first(ans);
       }
 
+      size_type estimate_touches(value_type x){
+
+	if(x>num_vertices() or x==0) return 0;
+	size_type init = first(x);
+
+	value_type yy1 = m_M_bv_select1(init)-init+1;
+
+	value_type yy2 = m_M_bv_select1(x+1)-x;
+
+	return yy2-yy1;
+      }
 
       value_type matrix_leftmost(value_type x1, value_type x2, value_type y1, value_type y2){
 	value_type yy1 = m_M_bv_select1(y1)-y1+1;
