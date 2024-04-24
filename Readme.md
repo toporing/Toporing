@@ -18,12 +18,9 @@ make
 
 Check that there is no errors.
 
-2. Download the version of Wikidata that you want to use:
+2. Download the version of Wikidata used in the testing:
 
-ACTUALIZAR ESTA SECCION
-
-- [Wikidata Filtered (about 80M triples)](http://compact-leapfrog.tk/files/wikidata-filtered-enumerated.dat).
-- [Wikidata (about 1000M triples)](http://compact-leapfrog.tk/files/wikidata-enumerated.dat.gz). Note that this file is compressed.
+- [Wikidata Filtered (957,450,487 triples)](http://doi.org/10.6084/m9.figshare.25683684).
 
 Now put the .dat file inside a folder.
 
