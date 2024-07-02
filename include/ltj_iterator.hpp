@@ -308,7 +308,7 @@ namespace ring {
         }
 
 
-        inline bool is_empty(){
+        inline bool is_empty() const override{
             return m_is_empty;
         }
 
@@ -521,7 +521,7 @@ namespace ring {
 	  return m_ptr_triple_pattern->term_p.value;
 	}
 
-	bool check_binded(state_type state){
+	bool check_binded(state_type state) const{
 
 	  if( m_level == 0 ) return false;
 
@@ -532,16 +532,16 @@ namespace ring {
 	  return false;
 	}
 
-	bool is_s_binded(){
+	bool is_s_binded() const{
 	  return check_binded(s);
 	}
 
-	bool is_p_binded(){
+	bool is_p_binded() const{
 	  return check_binded(p);
 	}
 
 
-	bool is_o_binded(){
+	bool is_o_binded() const{
 	  return check_binded(o);
 	}
 

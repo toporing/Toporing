@@ -65,7 +65,7 @@ namespace ring {
           // m_consts = o.m_consts;
       }
 
-    	ltj_iterator_geo(const triple_pattern *triple, georing_type *georing) :
+    	ltj_iterator_geo(triple_pattern *triple, georing_type *georing) :
     		m_ptr_triple_pattern(*triple) , m_ptr_georing(georing){
 	    if(m_ptr_triple_pattern.is_geo() && m_ptr_triple_pattern.term_p.value == TOPO_CONTAINED_IN){
 
@@ -240,23 +240,23 @@ namespace ring {
 	  return m_ptr_georing->num_vertices();
 	}
 
-	bool is_contains(){
+	bool is_contains() const{
 		return !m_ptr_triple_pattern.term_p.is_variable && m_ptr_triple_pattern.term_p.value == TOPO_CONTAINS;
 	}
 
-	bool is_contained_in(){
+	bool is_contained_in() const{
 		return !m_ptr_triple_pattern.term_p.is_variable && m_ptr_triple_pattern.term_p.value == TOPO_CONTAINED_IN;
 	}
 
-	bool is_touches(){
+	bool is_touches() const{
 		return !m_ptr_triple_pattern.term_p.is_variable && m_ptr_triple_pattern.term_p.value == TOPO_TOUCHES;
 	}
 
-	bool is_empty() override{
+	bool is_empty() const override{
 		return false;
 	}
 
-	bool check_binded(state_type state){
+	bool check_binded(state_type state) const {
 
 		if( m_level == 0 ) return false;
 
@@ -267,16 +267,16 @@ namespace ring {
 		return false;
 	}
 
-	bool is_s_binded(){
+	bool is_s_binded() const{
 		return check_binded(s);
 	}
 
 
-	bool is_p_binded(){
+	bool is_p_binded() const{
 		return check_binded(p);
 	}
 
-	bool is_o_binded(){
+	bool is_o_binded() const{
 		return check_binded(o);
 	}
 
@@ -328,6 +328,8 @@ namespace ring {
 	      return m_ptr_georing->min_contains_q(binding);
 	    case TOPO_TOUCHES:
 	      return m_ptr_georing->min_touches_q(binding);
+	    case TOPO_NOT_TOUCHES:
+	      return m_ptr_georing->min_not_touches_q(binding);
 	    case TOPO_NOT_CONTAINS:
 	      return m_ptr_georing->min_not_contains_q(binding);
 	    case TOPO_INVALID:
@@ -344,6 +346,8 @@ namespace ring {
 	      return m_ptr_georing->min_contained_in_q(binding);
 	    case TOPO_TOUCHES:
 	      return m_ptr_georing->min_touches_q(binding);
+	    case TOPO_NOT_TOUCHES:
+	      return m_ptr_georing->min_not_touches_q(binding);
 	    case TOPO_NOT_CONTAINS:
 	      return m_ptr_georing->min_not_contained_in_q(binding);
 	    case TOPO_INVALID:
@@ -361,6 +365,8 @@ namespace ring {
 	      return m_ptr_georing->min_contains(binding);
 	    case TOPO_TOUCHES:
 	      return m_ptr_georing->min_touches(binding);
+	    case TOPO_NOT_TOUCHES:
+	      return m_ptr_georing->min_not_touches(binding);
 	    case TOPO_NOT_CONTAINS:
 	      return m_ptr_georing->min_not_contains(binding);
 	    case TOPO_INVALID:
@@ -377,6 +383,8 @@ namespace ring {
 	      return m_ptr_georing->min_contained_in(binding);
 	    case TOPO_TOUCHES:
 	      return m_ptr_georing->min_touches(binding);
+	    case TOPO_NOT_TOUCHES:
+	      return m_ptr_georing->min_not_touches(binding);
 	    case TOPO_NOT_CONTAINS:
 	      return m_ptr_georing->min_not_contained_in(binding);
 	    case TOPO_INVALID:
@@ -502,6 +510,8 @@ namespace ring {
 	      return m_ptr_georing->contains(binding,c);
 	    case TOPO_TOUCHES:
 	      return m_ptr_georing->touches(binding,c);
+	    case TOPO_NOT_TOUCHES:
+	      return m_ptr_georing->not_touches(binding,c);
 	    case TOPO_NOT_CONTAINS:
 	      return m_ptr_georing->not_contains(binding,c);
 	    case TOPO_INVALID:
@@ -518,6 +528,8 @@ namespace ring {
 	      return m_ptr_georing->contains(binding_s, binding_o)==binding_o;
 	    case TOPO_TOUCHES:
 	      return m_ptr_georing->touches(binding_s,binding_o)==binding_o;
+	    case TOPO_NOT_TOUCHES:
+	      return m_ptr_georing->not_touches(binding_s,binding_o)==binding_o;
 	    case TOPO_NOT_CONTAINS:
 	      return m_ptr_georing->not_contains(binding_s,binding_o)==binding_o;
 	    case TOPO_INVALID:
@@ -534,6 +546,8 @@ namespace ring {
 	      return m_ptr_georing->contained_in(binding, c);
 	    case TOPO_TOUCHES:
 	      return m_ptr_georing->touches(binding, c);
+	    case TOPO_NOT_TOUCHES:
+	      return m_ptr_georing->not_touches(binding, c);
 	    case TOPO_NOT_CONTAINS:
 	      return m_ptr_georing->not_contained_in(binding, c);
 	    case TOPO_INVALID:

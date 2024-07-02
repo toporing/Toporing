@@ -4,6 +4,7 @@
 #include "georing_base.hpp" 
 #include <sdsl/bp_support_sada.hpp>
 #include "configuration.hpp"
+#include <omp.h>
 
 using namespace std;
 
@@ -75,7 +76,7 @@ namespace ring{
 
     public:
 
-      size_type num_vertices(){
+      size_type num_vertices() const{
 	return m_T_bv.size()/2;
       }
       
@@ -239,9 +240,9 @@ namespace ring{
 	//
 	
 
-	/*
+	
 
-	int t = 4;
+	int t = 2;
 	m_threshold = t;
 	//vector<vector<int> >  vx(num_vertices()+1);
   
@@ -249,13 +250,13 @@ namespace ring{
 	
 	int total_runs = 0;
 
-	vector<vector<int> > runs;
-
+	vector<vector<int> > runs(num_vertices(), vector<int>());
+#ifdef PARALLEL_CONSTRUCTION
+#pragma omp parallel for
+#endif
 	for(int i=1; i<=num_vertices(); i++){
 
-	  runs.push_back(vector<int>());
-	  auto &this_runs = runs.back();
-	  //cout <<i << endl;
+	  auto &this_runs = runs[i-1];
 	  //processing leaves here->
 	  //
 
@@ -314,7 +315,7 @@ namespace ring{
 
 	  //cout << "rn(i) -> ";
 	  //
-	  /*
+	  
 	  int a = touches(i, 1);  
 	  int lb = a;
 
@@ -359,7 +360,7 @@ namespace ring{
 	      a = lb = touches(i,j);
 
 	      
-	      total_runs++;
+	      //total_runs++;
 	    }
 
 	  
@@ -367,7 +368,11 @@ namespace ring{
 	  //cout <<endl;
 	  //total_runs += vx[i].size()/2;
 	}
-	//cout << "total runs with every node -> "<<total_runs << endl;
+
+	for(auto &v: runs){
+		total_runs += v.size()/2;
+	}
+	cout << "total runs with every node -> "<<total_runs << endl;
 
 	m_run_inits.resize(total_runs);
 	m_run_endings.resize(total_runs);
@@ -396,7 +401,7 @@ namespace ring{
 	m_run_limits.swap(run_limits_local);
 	sdsl::util::init_support(m_run_limits_select, &m_run_limits);
 	sdsl::util::init_support(m_run_limits_rank, &m_run_limits);
-	*/
+	
 	//debug_print_runs();
 
 	
@@ -405,13 +410,13 @@ namespace ring{
 	    touches_local[i]=1;
 	  }
 	}
-	/*
+	
 	for(int i=1; i<=num_vertices(); i++){
 	  if(not_touches(i,1) !=0){
 	    not_touches_local[i]=1;
 	  }
 	}
-	*/
+	
 
 	for(int i=1; i<=num_vertices(); i++){
 	  if(not_contains(i,1) !=0){
@@ -589,7 +594,7 @@ namespace ring{
 	    //debug_print_pars(0,10);
         }
 
-      value_type first(value_type x){
+      value_type first(value_type x) const{
 	size_type pos_close = m_T_select0(x);
 	size_type pos_open = m_T_bp.find_open(pos_close);
 	return 2+pos_open-m_T_bp.rank(pos_open);
@@ -610,47 +615,47 @@ namespace ring{
 
       // returns the position of the opening parentheses for node with
       // postorder x
-      size_type post_to_pre(value_type x){
+      size_type post_to_pre(value_type x) const{
 	return m_T_bp.find_open(m_T_select0(x));
       }
 
-      value_type postorder_to_leaf_id(value_type postorder){
+      value_type postorder_to_leaf_id(value_type postorder) const {
 
 	      return m_touches_rank(postorder);
       }
 
-      value_type leaf_id_to_postorder(value_type leaf_id){
+      value_type leaf_id_to_postorder(value_type leaf_id) const {
 
 	      return m_is_leaf_select1(leaf_id);
       }
 
-      value_type node(value_type i){
+      value_type node(value_type i) const {
 	return m_T_select0(i);
       }
 
       // returns the postorder id for node with close parentheses at i
-      value_type postorder(value_type i){
+      value_type postorder(value_type i) const{
 	return i-m_T_bp.rank(i)+1;
       }
 
 
 
-      value_type min_contains_q(value_type x){
+      value_type min_contains_q(value_type x) const {
 	return contains(x,1);
       }
 
-      value_type min_contains(value_type x){
+      value_type min_contains(value_type x) const {
 	if(x> num_vertices()+1) return 0;
 	value_type ones = m_contains_rank(x);
 	if(ones == m_contains_rank(m_contains.size())) return 0;
 	return m_contains_select1(ones+1);
       }
 
-      value_type min_contained_in_q(value_type x){
+      value_type min_contained_in_q(value_type x) const {
 	return contained_in(x,1);
       }
 
-      value_type min_contained_in(value_type x){
+      value_type min_contained_in(value_type x) const {
 
 	if(x> num_vertices()+1) return 0;
 	value_type ones = m_contained_rank(x);
@@ -659,11 +664,11 @@ namespace ring{
       }
 
 
-      value_type min_not_contains_q(value_type x){
+      value_type min_not_contains_q(value_type x) const {
 	return not_contains(x,1);
       }
 
-      value_type min_not_contains(value_type x){
+      value_type min_not_contains(value_type x) const {
 
 	if(x> num_vertices()+1) return 0;
 	value_type ones = m_not_contains_rank(x);
@@ -671,11 +676,11 @@ namespace ring{
 	return m_not_contains_select1(ones+1);
       }
 
-      value_type min_not_contained_in_q(value_type x){
+      value_type min_not_contained_in_q(value_type x) const {
 	return not_contained_in(x,1);
       }
 
-      value_type min_not_contained_in(value_type x){
+      value_type min_not_contained_in(value_type x) const {
 
 	if(x> num_vertices()+1) return 0;
 	value_type ones = m_not_contained_rank(x);
@@ -683,11 +688,11 @@ namespace ring{
 	return m_not_contained_select1(ones+1);
       }
 
-      value_type min_touches_q(value_type x){
+      value_type min_touches_q(value_type x) const {
 	return touches(x,1);
       }
 
-      value_type min_touches(value_type x){
+      value_type min_touches(value_type x) const {
 
 	if(x> num_vertices()+1) return 0;
 	value_type ones = m_touches_rank(x);
@@ -697,11 +702,11 @@ namespace ring{
 
 
 
-      value_type min_not_touches_q(value_type x){
+      value_type min_not_touches_q(value_type x) const {
 	return not_touches(x,1);
       }
 
-      value_type min_not_touches(value_type x){
+      value_type min_not_touches(value_type x) const {
 
 	if(x> num_vertices()+1) return 0;
 	value_type ones = m_not_touches_rank(x);
@@ -710,10 +715,10 @@ namespace ring{
       }
 
       // returns true iff node with postorder x is contained inside postorder y
-      bool is_contained(value_type x, value_type y){
+      bool is_contained(value_type x, value_type y) const{
 	return first(y) <= x && x <= y;
       }
-      value_type contains(value_type q, value_type x){
+      value_type contains(value_type q, value_type x) const {
 	if(q>num_vertices() or x>num_vertices()) return 0;
 
 	if( is_contained(x,q) ) return x;
@@ -724,7 +729,7 @@ namespace ring{
       }
 
 
-      value_type not_contains(value_type q, value_type x){
+      value_type not_contains(value_type q, value_type x) const{
 	if(q>num_vertices() or x>num_vertices()) return 0;
 	if(is_contained(x,q)){
 	  return q!=num_vertices() ? q+1: 0;
@@ -732,7 +737,7 @@ namespace ring{
 	  return x;
 	}
       }
-      value_type contained_in(value_type q, value_type x){
+      value_type contained_in(value_type q, value_type x) const{
 	if(q>num_vertices() or x>num_vertices()) return 0;
 	if(x<=q) return q;
 	size_type pos_open_ans = m_T_bp.lca(post_to_pre(q), post_to_pre(x));
@@ -740,7 +745,7 @@ namespace ring{
 	return postorder(m_T_bp.find_close(pos_open_ans));
       }
       
-      value_type not_contained_in(value_type q, value_type x){
+      value_type not_contained_in(value_type q, value_type x) const{
 	if(q>num_vertices() or x>num_vertices()) return 0;
 	if(!is_contained(q,x)) return x;
 	size_type pos_close_x = m_T_select0(x);
@@ -751,7 +756,7 @@ namespace ring{
 	return first(ans);
       }
 
-      size_type estimate_touches(value_type x){
+      size_type estimate_touches(value_type x) const {
 
 	if(x>num_vertices() or x==0) return 0;
 	size_type init = first(x);
@@ -763,21 +768,21 @@ namespace ring{
 	return yy2-yy1;
       }
 
-      value_type matrix_leftmost(value_type x1, value_type x2, value_type y1, value_type y2){
+      value_type matrix_leftmost(value_type x1, value_type x2, value_type y1, value_type y2) const {
 	value_type yy1 = m_M_bv_select1(y1)-y1+1;
 	value_type yy2 = m_M_bv_select1(y2+1)-y2;
 	value_type ans = m_M_wt.range_next_value(x1, yy1, yy2-1);
 	return ans>x2 ? 0 : ans;
       }
 
-      value_type matrix_rightmost(value_type x1, value_type x2, value_type y1, value_type y2){
+      value_type matrix_rightmost(value_type x1, value_type x2, value_type y1, value_type y2) const {
 	value_type yy1 = m_M_bv_select1(y1)-y1+1;
 	value_type yy2 = m_M_bv_select1(y2+1)-y2;
 	value_type ans = m_M_wt.range_prev_value(x2, yy1, yy2-1);
 	return ans<x1 ? 0 : ans;
       }
 
-      value_type matrix_upmost(value_type x1, value_type x2, value_type y1, value_type y2){
+      value_type matrix_upmost(value_type x1, value_type x2, value_type y1, value_type y2) const {
 	if(x1>x2) return 0;
 	value_type xx1 = m_M_bv_select1(x1)-x1+1;
 	value_type xx2 = m_M_bv_select1(x2+1)-x2;
@@ -788,7 +793,7 @@ namespace ring{
 	return ans>x2 ? 0 : ans;
       }
 
-      value_type matrix_downmost(value_type x1, value_type x2, value_type y1, value_type y2){
+      value_type matrix_downmost(value_type x1, value_type x2, value_type y1, value_type y2) const {
 	if(x1>x2) return 0;
 	value_type xx1 = m_M_bv_select1(x1)-x1+1;
 	value_type xx2 = m_M_bv_select1(x2+1)-x2;
@@ -800,7 +805,7 @@ namespace ring{
       }
 
 
-      value_type left_touches(value_type q, value_type x){
+      value_type left_touches(value_type q, value_type x) const {
 
 
 	//value_type jj = matrix_leftmost(max(x,q+1),num_vertices()-1,first(q), q);
@@ -818,7 +823,7 @@ namespace ring{
       }
 
 
-      value_type right_touches(value_type q, value_type x){
+      value_type right_touches(value_type q, value_type x) const {
 
 
 //	value_type jj = matrix_rightmost(1,min(x-1, first(q)-1) ,first(q), q);
@@ -850,7 +855,7 @@ namespace ring{
       }
 
 
-      value_type left_t_touches(value_type q, value_type x){
+      value_type left_t_touches(value_type q, value_type x) const{
 
 
 	//value_type jj = matrix_upmost(max(x,q+1),num_vertices()-1,first(q), q);
@@ -869,7 +874,7 @@ namespace ring{
       }
 
 
-      value_type right_t_touches(value_type q, value_type x){
+      value_type right_t_touches(value_type q, value_type x) const {
 
 	//find rightmost before x
 	value_type j = matrix_downmost(1,x-1,first(q),q);
@@ -892,7 +897,7 @@ namespace ring{
 	return 0;
       }
 
-      value_type touches(value_type q, value_type x){
+      value_type touches(value_type q, value_type x) const {
 
 	if(q>num_vertices() or x>num_vertices()) return 0;
 	//not_in(q,x);
@@ -912,7 +917,7 @@ namespace ring{
 	return ans;
       }
 
-      value_type not_touches(value_type q, value_type x){
+      value_type not_touches(value_type q, value_type x) const {
 	//cout << "querying not_touches("<<q <<", "<<x<<")\n";
 	for(int k=x; k<x+m_threshold; k++){
 
@@ -942,7 +947,7 @@ namespace ring{
 
       }
       
-      void debug_print_pars(int i, int r){
+      void debug_print_pars(int i, int r) const {
 
 	      for(int j=i; j<i+r; j++){
 		      cerr << m_T_bv[j];
@@ -950,7 +955,7 @@ namespace ring{
 	      cerr << endl;
       }
 
-      void debug_print_runs(){
+      void debug_print_runs() const {
 
 	
 	int r_idx = 0;

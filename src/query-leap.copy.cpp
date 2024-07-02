@@ -342,31 +342,107 @@ void queryGeoBaseline(const std::string &file, const std::string &queries, const
 
 }
 
+
+ring::triple_pattern create_dummy_triple(int s, int p) {
+
+    ring::triple_pattern triple;
+    triple.const_s(s);
+    triple.const_p(31); // contains
+    triple.var_o(1);
+	
+
+}
+
+/*ring::triple_pattern create_dummy_triple(int s, int p) {
+
+    ring::triple_pattern triple;
+    triple.const_s(s);
+    triple.const_p(p);
+    triple.var_o(1);
+	
+
+}*/
+
 int main(int argc, char* argv[])
 {
 
     typedef ring::ring<> ring_type;
-    //typedef ring::c_ring ring_type;
-    //
-    if(argc < 4){
-        std::cout << "Usage: " << argv[0] << " <index> <queries> <limit> [baseline]" << std::endl;
+
+    if(argc < 3){
+        std::cout << "Usage: " << argv[0] << " <index> <# of queries>" << std::endl;
         return 0;
     }
 
     std::string index = argv[1];
-    std::string queries = argv[2];
-    uint64_t limit = std::atoll(argv[3]);
-    int is_baseline = 0;
-    if(argc>=5) is_baseline =  atoi(argv[4]);
-    std::string type = get_type(index);
+    int num_queries = atoi(argv[2]);
+    int num_S = 107836911;
+    int num_O = 242124917;
 
-    if (is_baseline==0 and type == "georing"){
-        queryGeo<ring::ring<>, ring::toporing<>,  ring::util::trait_size>(index, queries, limit);
-    }else if (is_baseline==1 and type == "georing"){
-        queryGeoBaseline<ring::ring<>, ring::toporing<>,  ring::util::trait_size>(index, queries, limit);
-    }else{
-        std::cout << "Type of index: " << type << " is not supported." << std::endl;
+    ring_type ring;
+    sdsl::load_from_file(ring, index+"-ring");
+
+    typedef ring::ltj_iterator<ring_type, uint8_t, uint64_t> iterator_type;
+    int *S_ids = new int[num_queries];
+    int *O_ids = new int[num_queries];
+//    int *C = new int[num_queries];
+    std::vector<ring::triple_pattern> triples;
+    std::vector<iterator_type> iters;
+
+    triples.reserve(num_queries+1);
+    iters.reserve(num_queries+1);
+    for(int i=0; i < num_queries; i++) {
+      S_ids[i] = rand() % num_S;
+  //    C[i] = rand() % num_S;
+      O_ids[i] = rand() % num_O;      
+      triples.push_back(create_dummy_triple(S_ids[i], O_ids[i]));
+      iters.push_back({&triples.back(), &ring});
     }
+
+    ::util::time::usage::usage_type start, stop;
+    uint64_t total_elapsed_time;
+    uint64_t total_user_time;
+
+
+    int dump = 0, x;
+    // Warm-up
+    for(int i=0; i < num_queries; i++){
+      // set 1 as var of iterator in O 
+      x = iters[i].leap(O_ids[i]);
+      //x = ring.leap(S_ids[i], O_ids[i]);
+    }
+    dump += x;
+
+    
+    cout << "query;total_elapsed_time" << endl;
+    
+
+    start = ::util::time::usage::now();
+
+    for(int i=0; i < num_queries; i++){
+      // set 1 as var of iterator in O 
+      x = iters[i].leap(O_ids[i]);
+      //x = ring.leap(S_ids[i], O_ids[i]);
+    }
+
+    stop = ::util::time::usage::now();
+    dump += x;
+    total_elapsed_time = (uint64_t) duration_cast<nanoseconds>(stop.elapsed - start.elapsed);
+    cout << "leap_ring;" << total_elapsed_time << endl;
+
+    
+    // std::string queries = argv[2];
+    // uint64_t limit = std::atoll(argv[3]);
+    // int is_baseline = 0;
+    // if(argc>=5) is_baseline =  atoi(argv[4]);
+    // std::string type = get_type(index);
+
+    // if (is_baseline==0 and type == "georing"){
+    //     queryGeo<ring::ring<>, ring::toporing<>,  ring::util::trait_size>(index, queries, limit);
+    // }else if (is_baseline==1 and type == "georing"){
+    //     queryGeoBaseline<ring::ring<>, ring::toporing<>,  ring::util::trait_size>(index, queries, limit);
+    // }else{
+    //     std::cout << "Type of index: " << type << " is not supported." << std::endl;
+    // }
 
 
 

@@ -23,7 +23,7 @@ else()
     message(STATUS "Compiler is recent enough to support C++11.")
 endif()
 if( CMAKE_COMPILER_IS_GNUCXX )
-    append_cxx_compiler_flags("-fpermissive -std=c++11 -Wall -Wextra " "GCC" CMAKE_CXX_FLAGS)
+    append_cxx_compiler_flags("-fpermissive -static -std=c++11 -Wall -Wextra " "GCC" CMAKE_CXX_FLAGS)
     append_cxx_compiler_flags("-msse4.2 -O3 -ffast-math -funroll-loops -fno-omit-frame-pointer -g" "GCC" CMAKE_CXX_FLAGS_RELEASE)
 else()
     append_cxx_compiler_flags("-fpermissive -std=c++11" "CLANG" CMAKE_CXX_FLAGS)
@@ -57,4 +57,13 @@ target_link_libraries(build-index sdsl divsufsort divsufsort64)
 add_executable(query-index src/query-index.cpp)
 target_compile_definitions(query-index PUBLIC ADAPTIVE=1)
 target_link_libraries(query-index sdsl divsufsort divsufsort64)
+
+add_executable(test-basic-queries src/test-basic-queries.cpp)
+target_compile_definitions(test-basic-queries PUBLIC ADAPTIVE=1)
+target_link_libraries(test-basic-queries sdsl divsufsort divsufsort64)
+
+
+add_executable(query-leap src/query-leap.cpp)
+target_compile_definitions(query-leap PUBLIC ADAPTIVE=1)
+target_link_libraries(query-leap sdsl divsufsort divsufsort64)
 

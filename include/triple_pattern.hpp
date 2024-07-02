@@ -56,11 +56,13 @@ namespace ring {
 	    term_p.value = TOPO_NOT_CONTAINS;
 	  }else if(s=="NOT_CONTAINED_IN"){
 	    term_p.value = TOPO_NOT_CONTAINED_IN;
-	  }
+	  }else if(s=="NOT_TOUCHES"){
+			term_p.value = TOPO_NOT_TOUCHES;
+		}
 
 	}
 
-	std::string topo_name(){
+	std::string topo_name() const{
 	  switch(term_p.value){
 	    case TOPO_CONTAINS:
 	      return "TOPO_CONTAINS";
@@ -72,6 +74,8 @@ namespace ring {
 	      return "TOPO_NOT_CONTAINS";
 	    case TOPO_NOT_CONTAINED_IN:
 	      return "TOPO_NOT_CONTAINED_IN";
+			case TOPO_NOT_TOUCHES:
+				return "TOPO_NOT_TOUCHES";
 	    default:
 	      return "ERROR";
 	  }

@@ -36,7 +36,7 @@ using namespace std;
 
 typedef std::tuple<uint32_t, uint32_t, uint32_t> spo_triple;
 enum state_type{s, p, o};
-enum topo_type{TOPO_CONTAINS, TOPO_CONTAINED_IN, TOPO_TOUCHES, TOPO_NOT_CONTAINS, TOPO_NOT_CONTAINED_IN,TOPO_INVALID};
+enum topo_type{TOPO_CONTAINS, TOPO_CONTAINED_IN, TOPO_TOUCHES, TOPO_NOT_CONTAINS, TOPO_NOT_CONTAINED_IN,TOPO_NOT_TOUCHES, TOPO_INVALID};
 //typedef sdsl::wm_int<bit_vector, rank_support_v<>, select_support_scan<>, select_support_scan<>> bwt_type;
 #define TOPO_IN_ID 1
 #define TOPO_CONTAINED_ID 2

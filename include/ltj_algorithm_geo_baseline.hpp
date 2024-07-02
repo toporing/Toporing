@@ -102,7 +102,7 @@ namespace ring {
 
         ltj_algorithm_geo_baseline() = default;
 
-        ltj_algorithm_geo_baseline(const std::vector<triple_pattern>* triple_patterns, ring_type* ring, georing_type*georing){
+        ltj_algorithm_geo_baseline(std::vector<triple_pattern>* triple_patterns, ring_type* ring, georing_type*georing){
 
             m_ptr_triple_patterns = new std::vector<triple_pattern>() ;//triple_patterns;
             m_ptr_geo_patterns = new std::vector<triple_pattern>() ;
@@ -112,7 +112,7 @@ namespace ring {
             size_type i = 0;
             m_iterators.reserve(m_ptr_triple_patterns->size());
 	    unordered_set<var_type> vars_set;
-            for(const auto& triple : *triple_patterns){
+            for(auto& triple : *triple_patterns){
                 //Bulding iterators
 		ltj_iter_base_ptr curr_iter;
                 if(triple.is_geo()){

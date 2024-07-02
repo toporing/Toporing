@@ -60,7 +60,7 @@ namespace ring {
         typedef std::vector<std::pair<var_type, value_type>> tuple_type;
         typedef std::chrono::high_resolution_clock::time_point time_point_type;
     private:
-        const std::vector<triple_pattern>* m_ptr_triple_patterns;
+        std::vector<triple_pattern>* m_ptr_triple_patterns;
         veo_type m_veo;
         ring_type* m_ptr_ring;
         georing_type* m_ptr_georing;
@@ -95,14 +95,14 @@ namespace ring {
 
         ltj_algorithm_geo() = default;
 
-        ltj_algorithm_geo(const std::vector<triple_pattern>* triple_patterns, ring_type* ring, georing_type*georing){
+        ltj_algorithm_geo(std::vector<triple_pattern>* triple_patterns, ring_type* ring, georing_type*georing){
 
             m_ptr_triple_patterns = triple_patterns;
             m_ptr_ring = ring;
             m_ptr_georing = georing;
             size_type i = 0;
             m_iterators.reserve(m_ptr_triple_patterns->size());
-            for(const auto& triple : *m_ptr_triple_patterns){
+            for(auto& triple : *m_ptr_triple_patterns){
                 //Bulding iterators
                 if(triple.is_geo()){
                   m_iterators.emplace_back(new ltj_iter_type_geo(&triple, m_ptr_georing));

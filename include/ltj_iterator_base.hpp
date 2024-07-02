@@ -40,7 +40,7 @@ namespace ring {
         //std::vector<value_type> leap_result_type;
 
     public:
-        virtual bool is_empty() = 0;
+        virtual bool is_empty() const = 0;
 
         virtual void down(var_type var, size_type c) = 0;
         virtual void down(var_type var, size_type c, size_type k) = 0;
@@ -65,9 +65,9 @@ namespace ring {
 
 	virtual bool check(){return false;}
 
-	virtual bool is_s_binded() = 0;
-	virtual bool is_p_binded() = 0;
-	virtual bool is_o_binded() = 0;
+	virtual bool is_s_binded() const = 0;
+	virtual bool is_p_binded() const = 0;
+	virtual bool is_o_binded() const = 0;
 	virtual value_type seek_last(var_type var){ return{}; }
 	virtual value_type seek_last_next(var_type var){ return{}; }
     };

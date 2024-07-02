@@ -46,7 +46,7 @@ unsigned try_map(unsigned u, unordered_map<unsigned,unsigned> &mapping,
   }else{
     unsigned new_id = mapping.size() + 1;
     mapping[u] = new_id;
-    mapping_inv[new_id] = u;
+    //mapping_inv[new_id] = u;
     //cout <<"P "<< u << " -> " << new_id << endl;
     return new_id;
   }
