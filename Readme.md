@@ -46,4 +46,7 @@ After running that command, you should see the number of the query, the number o
 <query number>;<number of results>;<elapsed time>;<user time>
 ```
 ---
+## Baselines
+
+For running the baselines described in the paper, see [here](https://compact-leapfrog.imfd.cl/) for instructions.
 
